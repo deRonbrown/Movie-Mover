@@ -2,7 +2,7 @@ import os
 import shutil
 import logging
 import urllib
-import time
+from time import sleep, localtime, strftime
 from Config import Config
 
 logger = logging.getLogger('Movie-Mover')
@@ -14,7 +14,8 @@ logger.setLevel(logging.INFO)
 
 def log(msg):
 	logger.info(msg)
-	print msg
+	time = strftime("%Y-%m-%d %H:%M:%S", localtime())
+	print time + ": " + msg
 
 running = True
 while running:
@@ -67,7 +68,7 @@ while running:
 				log("Directory is not empty. Path: '" + dirPath + "'")
 
 	try:
-		time.sleep(Config.SLEEP_SECS)
+		sleep(Config.SLEEP_SECS)
 	except Exception:
 		log("Quitting movie mover script.")
 		running = False
