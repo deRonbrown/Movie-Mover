@@ -5,7 +5,7 @@ import urllib
 import time
 from Config import Config
 
-logger = logging.getLogger('Testing')
+logger = logging.getLogger('Movie-Mover')
 hdlr = logging.FileHandler('./messages.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
@@ -18,20 +18,21 @@ def log(msg):
 
 running = True
 while running:
-	log("Checking for movies")
+	log("Checking for movies.")
 	for root, dirs, files in os.walk(Config.DL_DIRECTORY):
 		for file in files:
 			path = os.path.join(root, file)
 			size = os.path.getsize(path)
-			if (size > Config.MIN_FILE_SIZE):
-				
+			if (size < Config.MIN_FILE_SIZE):
+				os.remove(path)
+			else:	
 				newpath = os.path.join(Config.MOVIE_DESTINATION, file)
 				log("Attempting to rename '" + path + "' to '" + newpath + "'.")
 				try:
 					os.rename(path, newpath)
 					log("Rename of '" + path + "' to '" + newpath + "' successful.")
-				except OSError, e:
-					error = "Rename (move) unsuccessful. Error %d: %s" % (e.args[0], e.args[1])
+				except OSError as (errno, strerror):
+					error = "Rename (move) failed. {0}: {1}".format(errno, strerror)
 					log(error)
 				
 				log("Attempting to send download complete notification for: " + file)
@@ -39,8 +40,8 @@ while running:
 				try:
 					urllib.urlopen(notification)
 					log("Download complete notification successfully sent for: " + file)
-				except IOError, e:
-					error = "Download complete notification unsuccessful. Error %d: %s" % (e.args[0], e.args[1])
+				except IOError as (errno, strerror):
+					error = "Download complete notification failed. {0}: {1}".format(errno, strerror)
 					log(error)
 				
 				updateRpc = '{"jsonrpc": "2.0", "method": "VideoLibrary.ScanForContent", "id": "1"}'
@@ -48,22 +49,30 @@ while running:
 				try:
 					respdata = urllib.urlopen(Config.JSON_RPC_URL, updateRpc).read()
 					log("Update of XBMC library successful.")
-				except IOError, e:
-					error = "Update of XBMC library unsuccessful. Error %d: %s" % (e.args[0], e.args[1])
+				except IOError as (errno, strerror):
+					error = "Update of XBMC library failed. {0}: {1}".format(errno, strerror)
 	
 	for root, dirs, files in os.walk(Config.DL_DIRECTORY):
-		if dirs != []:
-			for dir in dirs:
-				dirPath = os.path.join(root, dir)
-				log("Removing directory '" + dirPath + "'")
-				shutil.rmtree(dirPath)
+		for dir in dirs:
+			dirPath = os.path.join(root, dir)
+			if os.listdir(dirPath) == []:
+				log("Attempting to remove empty directory: '" + dirPath + "'")
+				try:
+					shutil.rmtree(dirPath)
+					log("Removing directory: '" + dirPath + "'")
+				except OSError as (errno, strerror):
+					error = "Removing of directory failed. {0}: {1}".format(errno, strerror)
+					log(error)
+			else:
+				log("Directory is not empty. Path: '" + dirPath + "'")
+
 	try:
 		time.sleep(Config.SLEEP_SECS)
-	except Exception, e:
+	except Exception:
 		log("Quitting movie mover script.")
 		running = False
-	except KeyboardInterrupt, e:
+	except KeyboardInterrupt:
 		log("Quitting movie mover script.")
 		running = False
 
-log("Movie mover has quit")
+log("Movie mover has quit.")
