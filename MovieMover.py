@@ -30,9 +30,17 @@ while running:
 			path = os.path.join(root, file)
 			size = os.path.getsize(path)
 			if (size < Config.MIN_FILE_SIZE):
-				os.remove(path)
+				log("Attempting to remove: '" + path + "'.")
+				try:
+					os.remove(path)
+					log("Remove successful for: '" + path + "'.")
+				except OSError as (errno, strerror):
+					error = "Remove failed for: '" + path + "'. {0}: {1}"
+					error.format(errno, strerror)
+					logErr(error)
 			else:	
 				newpath = os.path.join(Config.MOVIE_DESTINATION, file)
+				log("Found movie: " + file)
 				log("Attempting to rename '" + path + "' to '" + newpath + "'.")
 				try:
 					os.rename(path, newpath)
