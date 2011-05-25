@@ -15,7 +15,12 @@ logger.setLevel(logging.INFO)
 def log(msg):
 	logger.info(msg)
 	time = strftime("%Y-%m-%d %H:%M:%S", localtime())
-	print time + ": " + msg
+	print time + " [II]: " + msg
+
+def logErr(msg):
+	logger.error(msg)
+	time = strftime("%Y-%m-%d %H:%M:%S", localtime())
+	print time + " [EE]: " + msg
 
 running = True
 while running:
@@ -34,7 +39,7 @@ while running:
 					log("Rename successful: '" + path + "' to '" + newpath + "'")
 				except OSError as (errno, strerror):
 					error = "Rename (move) failed. {0}: {1}".format(errno, strerror)
-					log(error)
+					logErr(error)
 				
 				log("Attempting to send download complete notification for: " + file)
 				notification = Config.XBMC_URL + "/xbmcCmds/xbmcHttp?command=ExecBuiltIn(Notification(" + file + ", Download Complete))"
@@ -43,7 +48,7 @@ while running:
 					log("Download complete notification successfully sent for: " + file)
 				except IOError as (errno, strerror):
 					error = "Download complete notification failed. {0}: {1}".format(errno, strerror)
-					log(error)
+					logErr(error)
 				
 				updateRpc = '{"jsonrpc": "2.0", "method": "VideoLibrary.ScanForContent", "id": "1"}'
 				log("Attemping to update XBMC library.")
@@ -52,6 +57,7 @@ while running:
 					log("Update of XBMC library successful.")
 				except IOError as (errno, strerror):
 					error = "Update of XBMC library failed. {0}: {1}".format(errno, strerror)
+					logErr(error)
 	
 	for root, dirs, files in os.walk(Config.DL_DIRECTORY):
 		for dir in dirs:
@@ -63,7 +69,7 @@ while running:
 					log("Remove of directory succeeded: '" + dirPath + "'")
 				except OSError as (errno, strerror):
 					error = "Removing of directory failed. {0}: {1}".format(errno, strerror)
-					log(error)
+					logErr(error)
 			else:
 				log("Directory is not empty. Path: '" + dirPath + "'")
 
