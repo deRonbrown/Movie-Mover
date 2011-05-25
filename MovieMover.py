@@ -31,7 +31,7 @@ while running:
 				log("Attempting to rename '" + path + "' to '" + newpath + "'.")
 				try:
 					os.rename(path, newpath)
-					log("Rename of '" + path + "' to '" + newpath + "' successful.")
+					log("Rename successful: '" + path + "' to '" + newpath + "'")
 				except OSError as (errno, strerror):
 					error = "Rename (move) failed. {0}: {1}".format(errno, strerror)
 					log(error)
@@ -60,7 +60,7 @@ while running:
 				log("Attempting to remove empty directory: '" + dirPath + "'")
 				try:
 					shutil.rmtree(dirPath)
-					log("Removing directory: '" + dirPath + "'")
+					log("Remove of directory succeeded: '" + dirPath + "'")
 				except OSError as (errno, strerror):
 					error = "Removing of directory failed. {0}: {1}".format(errno, strerror)
 					log(error)
