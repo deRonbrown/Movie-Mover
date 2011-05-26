@@ -67,10 +67,11 @@ while running:
 					logErr(error)
 				
 	if (update):
-		updateLibrary = Config.XBMC_URL + "/xbmcCmds/xbmcHttp?command=ExecBuiltIn&parameter=XBMC.updatelibrary(video)"
+		updateLibrary = Config.XBMC_URL + "/jsonrpc"
+		rpc = '{"jsonrpc": "2.0", "method": "VideoLibrary.ScanForContent", "id": "MM"}'
 		log("Attemping to update XBMC library.")
 		try:
-			respdata = urllib.urlopen(updateLibrary).close()
+			respdata = urllib.urlopen(updateLibrary, rpc).close()
 			log("Update of XBMC library successful.")
 		except IOError as (errno, strerror):
 			error = "Update of XBMC library failed. {0}: {1}".format(errno, strerror)
