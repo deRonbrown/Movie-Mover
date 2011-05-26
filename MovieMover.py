@@ -60,17 +60,17 @@ while running:
 				log("Attempting to send download complete notification for: " + file)
 				notification = Config.XBMC_URL + "/xbmcCmds/xbmcHttp?command=ExecBuiltIn(Notification(" + file + ", Download Complete))"
 				try:
-					urllib.urlopen(notification)
+					urllib.urlopen(notification).close()
 					log("Download complete notification successfully sent for: " + file)
 				except IOError as (errno, strerror):
 					error = "Download complete notification failed. {0}: {1}".format(errno, strerror)
 					logErr(error)
 				
 	if (update):
-		updateLibrary = Config.XBMC_URL + "/xbmcCmds/xbmcHttp?command=ExecBuiltIn(UpdateLibrary(video," + Config.MOVIE_DESTINATION + "))"
+		updateLibrary = Config.XBMC_URL + "/xbmcCmds/xbmcHttp?command=ExecBuiltIn&parameter=XBMC.updatelibrary(video)"
 		log("Attemping to update XBMC library.")
 		try:
-			respdata = urllib.urlopen(updateLibrary)
+			respdata = urllib.urlopen(updateLibrary).close()
 			log("Update of XBMC library successful.")
 		except IOError as (errno, strerror):
 			error = "Update of XBMC library failed. {0}: {1}".format(errno, strerror)
