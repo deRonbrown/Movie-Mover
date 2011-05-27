@@ -67,7 +67,7 @@ while running:
 					logErr(error)
 				
 	if (update):
-		updateLibrary = Config.XBMC_URL + "/xbmcCmds/xbmcHttp?command=ExecBuiltIn(UpdateLibrary(video, G:\Movies\))"
+		updateLibrary = Config.XBMC_URL + "/xbmcCmds/xbmcHttp?command=ExecBuiltIn(UpdateLibrary(video, " + Config.MOVIE_DESTINATION + "))"
 		log("Attemping to update XBMC library.")
 		try:
 			urllib.urlopen(updateLibrary).close()
