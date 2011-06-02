@@ -8,8 +8,7 @@ from Config import Config
 try:
 	os.remove('./messages.log')
 except OSError as (errno, strerror):
-	error = "Remove of old messages.log failed. {0}: {1}".format(errno, strerror)
-	logErr(error)
+	print "messages.log does not exits"
 
 logger = logging.getLogger('Movie-Mover')
 hdlr = logging.FileHandler('./messages.log')
