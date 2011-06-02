@@ -30,7 +30,6 @@ def logErr(msg):
 
 running = True
 while running:
-	log("Checking for movies.")
 	update = False
 	for root, dirs, files in os.walk(Config.DL_DIRECTORY):
 		for file in files:
@@ -57,24 +56,12 @@ while running:
 					error = "Rename (move) failed. {0}: {1}".format(errno, strerror)
 					logErr(error)
 				
-				log("Attempting to send download complete notification for: " + file)
 				notification = Config.XBMC_URL + "/xbmcCmds/xbmcHttp?command=ExecBuiltIn(Notification(" + file + ", Download Complete))"
-				try:
-					urllib.urlopen(notification).close()
-					log("Download complete notification successfully sent for: " + file)
-				except IOError as (errno, strerror):
-					error = "Download complete notification failed. {0}: {1}".format(errno, strerror)
-					logErr(error)
+				urllib.urlopen(notification).close()
 				
 	if (update):
 		updateLibrary = Config.XBMC_URL + "/xbmcCmds/xbmcHttp?command=ExecBuiltIn(UpdateLibrary(video, " + Config.MOVIE_DESTINATION + "))"
-		log("Attemping to update XBMC library.")
-		try:
-			urllib.urlopen(updateLibrary).close()
-			log("Update of XBMC library successful.")
-		except IOError as (errno, strerror):
-			error = "Update of XBMC library failed. {0}: {1}".format(errno, strerror)
-			logErr(error)
+		urllib.urlopen(updateLibrary).close()
 		update = False
 	
 	for root, dirs, files in os.walk(Config.DL_DIRECTORY):
@@ -94,10 +81,6 @@ while running:
 	try:
 		sleep(Config.SLEEP_SECS)
 	except Exception:
-		log("Quitting movie mover script.")
 		running = False
 	except KeyboardInterrupt:
-		log("Quitting movie mover script.")
 		running = False
-
-log("Movie mover has quit.")
