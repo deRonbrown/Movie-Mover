@@ -56,12 +56,18 @@ while running:
 					logErr(error)
 				
 				notification = Config.XBMC_URL + "/xbmcCmds/xbmcHttp?command=ExecBuiltIn(Notification(" + file + ", Download Complete))"
-				urllib.urlopen(notification).close()
+				try:
+					urllib.urlopen(notification).close()
+				except IOError as (errno, strerror):
+					error = "Failed to execute XBMC notification command. {0}: {1}".format(errno, strerror)
 				
 	if (update):
 		updateLibrary = Config.XBMC_URL + "/xbmcCmds/xbmcHttp?command=ExecBuiltIn(UpdateLibrary(video, " + Config.MOVIE_DESTINATION + "))"
-		urllib.urlopen(updateLibrary).close()
-		update = False
+		try:
+			urllib.urlopen(updateLibrary).close()
+			update = False
+		except IOError as (errno, strerror):
+			error = "Failed to execute XBMC update library command. {0}: {1}".format(errno, strerror)
 	
 	for root, dirs, files in os.walk(Config.DL_DIRECTORY):
 		for dir in dirs:
